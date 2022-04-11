@@ -41,7 +41,6 @@ void MainWindow::start()
     ui->myTable->setModel(myModel);
     ui->myTable->resize(500,250);
     ui->myTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->myTable->setSelectionMode(QAbstractItemView::MultiSelection);
     ui->myTable->setColumnWidth(0, 150);
     ui->myTable->setColumnWidth(1, 150);
     ui->myTable->setColumnWidth(2, 150);
@@ -58,20 +57,26 @@ void MainWindow::start()
 
 void MainWindow::on_painting_clicked()
 {
-    QModelIndexList selectedIndexes = ui->myTable->selectionModel()->selectedIndexes();
-    for (auto pIndex : selectedIndexes)
+    if(ui->myTable->selectionModel()->hasSelection())
     {
-        myModel->itemFromIndex(pIndex)->setData(QColor(Qt::yellow), Qt::BackgroundColorRole);
+        QModelIndexList selectedIndexes = ui->myTable->selectionModel()->selectedIndexes();
+        for (auto pIndex : selectedIndexes)
+        {
+            myModel->itemFromIndex(pIndex)->setData(QColor(Qt::yellow), Qt::BackgroundColorRole);
+        }
     }
 }
 
 
 void MainWindow::on_defaultColor_clicked()
 {
-    QModelIndexList selectedIndexes = ui->myTable->selectionModel()->selectedIndexes();
-    for (auto pIndex : selectedIndexes)
+    if(ui->myTable->selectionModel()->hasSelection())
     {
-        myModel->itemFromIndex(pIndex)->setData(QColor(Qt::white), Qt::BackgroundColorRole);
+        QModelIndexList selectedIndexes = ui->myTable->selectionModel()->selectedIndexes();
+        for (auto pIndex : selectedIndexes)
+        {
+            myModel->itemFromIndex(pIndex)->setData(QColor(Qt::white), Qt::BackgroundColorRole);
+        }
     }
 }
 
