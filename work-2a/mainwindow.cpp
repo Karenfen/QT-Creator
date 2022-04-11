@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    QStandardItemModel* list_model = new QStandardItemModel(this);
+    list_model = new QStandardItemModel(this);
     ui->myList->setModel(list_model);
 
     list_model->appendRow(new QStandardItem(QIcon(":/icons/cpp.png"), "C++"));
@@ -46,7 +46,7 @@ void MainWindow::on_addItem_clicked()
     if(!newName.isEmpty())
     {
         QStandardItem* newItem = new QStandardItem(QIcon(":/icons/default.jpg"), newName);
-        dynamic_cast<QStandardItemModel*>(ui->myList->model())->insertRow(0, newItem);
+        this->list_model->insertRow(0, newItem);
         ui->newRowText->clear();
     }
 
@@ -77,14 +77,14 @@ void MainWindow::on_delete_item_clicked()
 
 void MainWindow::on_up_clicked()
 {
-    QStandardItemModel* model = dynamic_cast<QStandardItemModel*>(ui->myList->model());
     int index = ui->myList->selectionModel()->currentIndex().row();
 
     if(index > 0)
     {
-        QStandardItem* row = model->takeItem(index);
-        model->removeRow(index);
-        model->insertRow(--index, row);
+        QStandardItem* row = this->list_model->takeItem(index);
+        this->list_model->removeRow(index);
+        this->list_model->insertRow(--index, row);
+        ui->myList->setCurrentIndex(this->list_model->index(index, 0));
     }
 
 }
@@ -92,14 +92,14 @@ void MainWindow::on_up_clicked()
 
 void MainWindow::on_down_clicked()
 {
-    QStandardItemModel* model = dynamic_cast<QStandardItemModel*>(ui->myList->model());
     int index = ui->myList->selectionModel()->currentIndex().row();
 
-    if(index < (model->rowCount() - 1) && index >= 0)
+    if(index < (this->list_model->rowCount() - 1) && index >= 0)
     {
-        QStandardItem* row = model->takeItem(index);
-        model->removeRow(index);
-        model->insertRow(++index, row);
+        QStandardItem* row = this->list_model->takeItem(index);
+        this->list_model->removeRow(index);
+        this->list_model->insertRow(++index, row);
+        ui->myList->setCurrentIndex(this->list_model->index(index, 0));
     }
 
 }
