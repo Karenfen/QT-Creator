@@ -10,11 +10,13 @@ CONFIG += c++11
 
 SOURCES += \
     filer.cpp \
+    finder.cpp \
     main.cpp \
     texteditor.cpp
 
 HEADERS += \
     filer.h \
+    finder.h \
     texteditor.h
 
 FORMS += \

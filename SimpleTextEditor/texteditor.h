@@ -46,13 +46,17 @@ private slots:
     void setTextAlignment();
     void selectAllText();
     void changeFont();
+    void enserDateTime();
 
 private:
+    enum Actions{SAVE_FILE, NEW_FILE, PRINT, EXPLOR, COPY_FONT, ALIG_LEFT, ALIG_CENTER, ALIG_RIGHT, SELECT_ALL_TEXT, SET_FONT, DATE, TIME, DATE_TIME,
+                LANG_RU, LANG_EN, SET_KEY_SAVE, SET_KEY_OPEN, SET_KEY_QUIT, SET_KEY_CLOSE, SHOW_KEYS, LIGHT_THEME, DARK_THEME, DEFAULT_THEME, HELP };
 
     std::unique_ptr<Ui::textEditor> ui;
     std::unique_ptr<QPlainTextEdit> help_widget;
     std::unique_ptr<QPlainTextEdit> changeKeyWidjet;
     std::unique_ptr<filer> fileView;
+
 
     QTextEdit* plaintext;
 
@@ -64,7 +68,7 @@ private:
 
 
     std::map<QString, int>hotKeys;
-    std::map<QString, QAction*> m_actions;
+    std::map<Actions, QAction*> m_actions;
 
     QTextCharFormat currentCharFormat;
 
@@ -72,6 +76,7 @@ private:
 
     QString hoKeyList();
     bool textEditIsValid();
+
 
 public:
 

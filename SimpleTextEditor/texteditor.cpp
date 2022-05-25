@@ -13,6 +13,7 @@
 #include <QToolBar>
 #include <QDesktopWidget>
 #include <QFontDialog>
+#include <QDateTime>
 
 
 
@@ -33,94 +34,104 @@ textEditor::textEditor(QWidget *parent)
     /* выбор языка */
     menuLeng = new QMenu(ui->menubar);
 
-    m_actions["setRu"] = new QAction(this);
-    m_actions["setEn"] = new QAction(this);
+    m_actions[LANG_RU] = new QAction(this);
+    m_actions[LANG_EN] = new QAction(this);
 
-    menuLeng->addActions({m_actions.at("setRu"), m_actions.at("setEn")});
+    menuLeng->addActions({m_actions.at(LANG_RU), m_actions.at(LANG_EN)});
 
     /* горячие клавиши */
     menuKey = new QMenu(ui->menubar);
 
-    m_actions["setKeySave"] = new QAction(this);
-    m_actions["setKeyOpen"] = new QAction(this);
-    m_actions["setKeyQuit"] = new QAction(this);
-    m_actions["setKeyClose"] = new QAction(this);
-    m_actions["showKeys"] = new QAction(this);
+    m_actions[SET_KEY_SAVE] = new QAction(menuKey);
+    m_actions[SET_KEY_OPEN] = new QAction(menuKey);
+    m_actions[SET_KEY_QUIT] = new QAction(menuKey);
+    m_actions[SET_KEY_CLOSE] = new QAction(menuKey);
+    m_actions[SHOW_KEYS] = new QAction(menuKey);
 
-    menuKey->addActions({m_actions.at("showKeys"), m_actions.at("setKeyClose"), m_actions.at("setKeyOpen"), m_actions.at("setKeySave"), m_actions.at("setKeyQuit")});
+    menuKey->addActions({m_actions.at(SHOW_KEYS), m_actions.at(SET_KEY_CLOSE), m_actions.at(SET_KEY_OPEN), m_actions.at(SET_KEY_SAVE), m_actions.at(SET_KEY_QUIT)});
 
     /* выбор темы */
     menuTheme = new QMenu(ui->menubar);
 
-    m_actions["lightTheme"] = new QAction(this);
-    m_actions["darkTheme"] = new QAction(this);
-    m_actions["default"] = new QAction(this);
+    m_actions[LIGHT_THEME] = new QAction(menuTheme);
+    m_actions[DARK_THEME] = new QAction(menuTheme);
+    m_actions[DEFAULT_THEME] = new QAction(menuTheme);
 
-    menuTheme->addActions({m_actions.at("lightTheme"), m_actions.at("darkTheme"), m_actions.at("default")});
+    menuTheme->addActions({m_actions.at(LIGHT_THEME), m_actions.at(DARK_THEME), m_actions.at(DEFAULT_THEME)});
 
-    m_actions["help"] = new QAction(this);
+    m_actions[HELP] = new QAction(this);
 
     ui->menubar->addMenu(menuLeng);
     ui->menubar->addMenu(menuKey);
     ui->menubar->addMenu(menuTheme);
-    ui->menubar->addAction(m_actions.at("help"));
+    ui->menubar->addAction(m_actions.at(HELP));
 
 // добавляем tool-bar
-    QToolBar* toolbar = new QToolBar{};
+    QToolBar* toolbar = new QToolBar(this);
 
-    m_actions["bar_save"] = new QAction(this);
-    m_actions["bar_nfile"] =new QAction(this);
-    m_actions["bar_print"] = new QAction(this);
-    m_actions["bar_expl"] = new QAction(this);
-    m_actions["copy_font"] = new QAction(this);
-    m_actions["alig_L"] = new QAction(this);
-    m_actions["alig_C"] = new QAction(this);
-    m_actions["alig_R"] = new  QAction(this);
-    m_actions["select_AT"] = new  QAction(this);
-    m_actions["set_font"] = new  QAction(this);
+    m_actions[SAVE_FILE] = new QAction(toolbar);
+    m_actions[NEW_FILE] =new QAction(toolbar);
+    m_actions[PRINT] = new QAction(toolbar);
+    m_actions[EXPLOR] = new QAction(toolbar);
+    m_actions[COPY_FONT] = new QAction(toolbar);
+    m_actions[ALIG_LEFT] = new QAction(toolbar);
+    m_actions[ALIG_CENTER] = new QAction(toolbar);
+    m_actions[ALIG_RIGHT] = new  QAction(toolbar);
+    m_actions[SELECT_ALL_TEXT] = new  QAction(toolbar);
+    m_actions[SET_FONT] = new  QAction(toolbar);
+
+    m_actions[DATE] = new QAction(toolbar);
+    m_actions[TIME] = new QAction(toolbar);
+    m_actions[DATE_TIME] = new QAction(toolbar);
 
 
-    toolbar->addActions({m_actions.at("bar_save"), m_actions.at("bar_nfile"), m_actions.at("bar_print"), m_actions.at("bar_expl"), m_actions.at("copy_font"),
-                        m_actions.at("alig_L"), m_actions.at("alig_C"), m_actions.at("alig_R"), m_actions.at("select_AT"), m_actions.at("set_font")});
-    toolbar->insertSeparator(m_actions.at("bar_expl"));
-    toolbar->insertSeparator(m_actions.at("copy_font"));
+    toolbar->addActions({m_actions.at(SAVE_FILE), m_actions.at(NEW_FILE), m_actions.at(PRINT), m_actions.at(EXPLOR), m_actions.at(COPY_FONT),
+                        m_actions.at(ALIG_LEFT), m_actions.at(ALIG_CENTER), m_actions.at(ALIG_RIGHT), m_actions.at(SELECT_ALL_TEXT), m_actions.at(SET_FONT),
+                        m_actions.at(DATE_TIME), m_actions.at(DATE), m_actions.at(TIME)});
+    toolbar->insertSeparator(m_actions.at(EXPLOR));
+    toolbar->insertSeparator(m_actions.at(COPY_FONT));
+    toolbar->insertSeparator(m_actions.at(DATE_TIME));
 
     addToolBar(toolbar);
 
 // устанавливаем коннекты
-    connect(m_actions.at("setKeySave"), &QAction::triggered, this, &textEditor::onMenuKeyCliced);
-    connect(m_actions.at("setKeyOpen"), &QAction::triggered, this, &textEditor::onMenuKeyCliced);
-    connect(m_actions.at("setKeyClose"), &QAction::triggered, this, &textEditor::onMenuKeyCliced);
-    connect(m_actions.at("setKeyQuit"), &QAction::triggered, this, &textEditor::onMenuKeyCliced);
-    connect(m_actions.at("showKeys"), &QAction::triggered, this, &textEditor::onMenuKeyInfo);
+    connect(m_actions.at(SET_KEY_SAVE), &QAction::triggered, this, &textEditor::onMenuKeyCliced);
+    connect(m_actions.at(SET_KEY_OPEN), &QAction::triggered, this, &textEditor::onMenuKeyCliced);
+    connect(m_actions.at(SET_KEY_CLOSE), &QAction::triggered, this, &textEditor::onMenuKeyCliced);
+    connect(m_actions.at(SET_KEY_QUIT), &QAction::triggered, this, &textEditor::onMenuKeyCliced);
+    connect(m_actions.at(SHOW_KEYS), &QAction::triggered, this, &textEditor::onMenuKeyInfo);
 
-    connect(m_actions.at("setRu"), &QAction::triggered, this, &textEditor::onMenuLangClicked);
-    connect(m_actions.at("setEn"), &QAction::triggered, this, &textEditor::onMenuLangClicked);
+    connect(m_actions.at(LANG_RU), &QAction::triggered, this, &textEditor::onMenuLangClicked);
+    connect(m_actions.at(LANG_EN), &QAction::triggered, this, &textEditor::onMenuLangClicked);
 
-    connect(m_actions.at("lightTheme"), &QAction::triggered, this, &textEditor::setTheme);
-    connect(m_actions.at("darkTheme"), &QAction::triggered, this, &textEditor::setTheme);
-    connect(m_actions.at("default"), &QAction::triggered, this, &textEditor::setTheme);
+    connect(m_actions.at(LIGHT_THEME), &QAction::triggered, this, &textEditor::setTheme);
+    connect(m_actions.at(DARK_THEME), &QAction::triggered, this, &textEditor::setTheme);
+    connect(m_actions.at(DEFAULT_THEME), &QAction::triggered, this, &textEditor::setTheme);
 
     connect(fileView.get(), SIGNAL(fileSelected(QString)), this, SLOT(filerReturnPath(QString)));
 
-    connect(m_actions.at("help"), &QAction::triggered, this, &textEditor::on_pushButton_help_clicked);
+    connect(m_actions.at(HELP), &QAction::triggered, this, &textEditor::on_pushButton_help_clicked);
 
-    connect(m_actions.at("bar_save"), &QAction::triggered, this, &textEditor::on_pushButton_save_clicked);
-    connect(m_actions.at("bar_nfile"), &QAction::triggered, this, [this] {
+    connect(m_actions.at(SAVE_FILE), &QAction::triggered, this, &textEditor::on_pushButton_save_clicked);
+    connect(m_actions.at(NEW_FILE), &QAction::triggered, this, [this] {
                 plaintext = new QTextEdit(this);
                 ui->mdiArea->addSubWindow(plaintext);
                 plaintext->showMaximized();
             });
-    connect(m_actions.at("bar_print"), &QAction::triggered, this, &textEditor::on_print_clicked);
-    connect(m_actions.at("bar_expl"), &QAction::triggered, this, &textEditor::on_showFiles_clicked);
-    connect(m_actions.at("copy_font"), &QAction::toggled, this, &textEditor::copy_past_font);
+    connect(m_actions.at(PRINT), &QAction::triggered, this, &textEditor::on_print_clicked);
+    connect(m_actions.at(EXPLOR), &QAction::triggered, this, &textEditor::on_showFiles_clicked);
+    connect(m_actions.at(COPY_FONT), &QAction::toggled, this, &textEditor::copy_past_font);
 
-    connect(m_actions.at("alig_L"), &QAction::triggered, this, &textEditor::setTextAlignment);
-    connect(m_actions.at("alig_C"), &QAction::triggered, this, &textEditor::setTextAlignment);
-    connect(m_actions.at("alig_R"), &QAction::triggered, this, &textEditor::setTextAlignment);
+    connect(m_actions.at(ALIG_LEFT), &QAction::triggered, this, &textEditor::setTextAlignment);
+    connect(m_actions.at(ALIG_CENTER), &QAction::triggered, this, &textEditor::setTextAlignment);
+    connect(m_actions.at(ALIG_RIGHT), &QAction::triggered, this, &textEditor::setTextAlignment);
 
-    connect(m_actions.at("select_AT"), &QAction::triggered, this, &textEditor::selectAllText);
-    connect(m_actions.at("set_font"), &QAction::triggered, this, &textEditor::changeFont);
+    connect(m_actions.at(SELECT_ALL_TEXT), &QAction::triggered, this, &textEditor::selectAllText);
+    connect(m_actions.at(SET_FONT), &QAction::triggered, this, &textEditor::changeFont);
+
+    connect(m_actions.at(DATE), &QAction::triggered, this, &textEditor::enserDateTime);
+    connect(m_actions.at(TIME), &QAction::triggered, this, &textEditor::enserDateTime);
+    connect(m_actions.at(DATE_TIME), &QAction::triggered, this, &textEditor::enserDateTime);
 
 // устанавливаем ивент-фильтры
     centralWidget()->installEventFilter(this);
@@ -153,7 +164,7 @@ void textEditor::onMenuLangClicked()
 {
     QObject* obj = sender();
 
-    if(obj->objectName() == "setRu")
+    if(obj->objectName() == Actions::LANG_RU)
     {
         qApp->removeTranslator(translator);
     }
@@ -280,7 +291,7 @@ void textEditor::copy_past_font()
     if(!textEditIsValid())
         return;
 
-    if(m_actions.at("copy_font")->isChecked())
+    if(m_actions.at(COPY_FONT)->isChecked())
     {
         currentCharFormat = plaintext->textCursor().charFormat();
     }
@@ -329,6 +340,26 @@ void textEditor::changeFont()
     textCursore.setCharFormat(CharFormat);
     plaintext->setTextCursor(textCursore);
 
+}
+
+void textEditor::enserDateTime()
+{
+    if(!textEditIsValid())
+        return;
+    if(plaintext->isReadOnly())
+        return;
+    if(sender()->objectName() == "date")
+    {
+        plaintext->textCursor().insertText(QDate::currentDate().toString());
+    }
+    else if(sender()->objectName() == "time")
+    {
+        plaintext->textCursor().insertText(QTime::currentTime().toString());
+    }
+    else if(sender()->objectName() == "date_time")
+    {
+        plaintext->textCursor().insertText(QDateTime::currentDateTime().toString());
+    }
 }
 
 
@@ -485,33 +516,37 @@ void textEditor::setText()
     menuLeng->setToolTip(tr("установить язык интерфейса"));
     menuKey->setToolTip(tr("нажмите для замены комбинации клавишь"));
     menuTheme->setToolTip(tr("нажмите для смены темы оформления"));
-    m_actions.at("help")->setToolTip(tr("открыть текст справки по приложению"));
+    m_actions.at(HELP)->setToolTip(tr("открыть текст справки по приложению"));
 
     menuLeng->setTitle(tr("Язык"));
     menuKey->setTitle(tr("корячие клавиши"));
     menuTheme->setTitle(tr("оформление"));
 
-    m_actions.at("setKeySave")->setText(tr("сохранить как..."));
-    m_actions.at("setKeyOpen")->setText(tr("открыть новый документ"));
-    m_actions.at("setKeyQuit")->setText(tr("закрыть программу"));
-    m_actions.at("setKeyClose")->setText(tr("закрыть документ не сохраняя"));
-    m_actions.at("showKeys")->setText(tr("посмотреть горячие клавиши"));
-    m_actions.at("lightTheme")->setText(tr("светлая тема"));
-    m_actions.at("darkTheme")->setText(tr("тёмная тема"));
-    m_actions.at("default")->setText(tr("стандартная тема"));
-    m_actions.at("help")->setText(tr("справка"));
+    m_actions.at(SET_KEY_SAVE)->setText(tr("сохранить как..."));
+    m_actions.at(SET_KEY_OPEN)->setText(tr("открыть новый документ"));
+    m_actions.at(SET_KEY_QUIT)->setText(tr("закрыть программу"));
+    m_actions.at(SET_KEY_CLOSE)->setText(tr("закрыть документ не сохраняя"));
+    m_actions.at(SHOW_KEYS)->setText(tr("посмотреть горячие клавиши"));
+    m_actions.at(LIGHT_THEME)->setText(tr("светлая тема"));
+    m_actions.at(DARK_THEME)->setText(tr("тёмная тема"));
+    m_actions.at(DEFAULT_THEME)->setText(tr("стандартная тема"));
+    m_actions.at(HELP)->setText(tr("справка"));
     changeKeyWidjet->setPlainText(tr("нажмите CTRL + клавишу для замены"));
 
-    m_actions.at("bar_save")->setText(tr("сохранить как..."));
-    m_actions.at("bar_nfile")->setText(tr("создать новый файл"));
-    m_actions.at("bar_print")->setText(tr("печать документа"));
-    m_actions.at("bar_expl")->setText(tr("открыть/закрыть проводник"));
-    m_actions.at("copy_font")->setText(tr("форматирование по образцу"));
-    m_actions.at("alig_L")->setText(tr("выравнивание по левому краю"));
-    m_actions.at("alig_C")->setText(tr("выравнивание по центру"));
-    m_actions.at("alig_R")->setText(tr("выравнивание по правому краю"));
-    m_actions.at("select_AT")->setText(tr("выделить весь текс"));
-    m_actions.at("set_font")->setText(tr("выбор шрифта"));
+    m_actions.at(SAVE_FILE)->setText(tr("сохранить как..."));
+    m_actions.at(NEW_FILE)->setText(tr("создать новый файл"));
+    m_actions.at(PRINT)->setText(tr("печать документа"));
+    m_actions.at(EXPLOR)->setText(tr("открыть/закрыть проводник"));
+    m_actions.at(COPY_FONT)->setText(tr("форматирование по образцу"));
+    m_actions.at(ALIG_LEFT)->setText(tr("выравнивание по левому краю"));
+    m_actions.at(ALIG_CENTER)->setText(tr("выравнивание по центру"));
+    m_actions.at(ALIG_RIGHT)->setText(tr("выравнивание по правому краю"));
+    m_actions.at(SELECT_ALL_TEXT)->setText(tr("выделить весь текс"));
+    m_actions.at(SET_FONT)->setText(tr("выбор шрифта"));
+    m_actions.at(DATE)->setText(tr("вставить дату"));
+    m_actions.at(TIME)->setText(tr("вставить время"));
+    m_actions.at(DATE_TIME)->setText(tr("вставить дату и время"));
+
 }
 
 void textEditor::personalization()
@@ -555,20 +590,20 @@ void textEditor::personalization()
 
 
 // настраиваем меню
-    m_actions.at("setEn")->setObjectName("setEn");
-    m_actions.at("setRu")->setObjectName("setRu");
+    m_actions.at(LANG_EN)->setObjectName("setEn");
+    m_actions.at(LANG_RU)->setObjectName("setRu");
 
-    m_actions.at("setRu")->setText("Русский");
-    m_actions.at("setEn")->setText("English");
+    m_actions.at(LANG_RU)->setText("Русский");
+    m_actions.at(LANG_EN)->setText("English");
 
-    m_actions.at("setKeySave")->setObjectName("save");
-    m_actions.at("setKeyOpen")->setObjectName("open");
-    m_actions.at("setKeyQuit")->setObjectName("quit");
-    m_actions.at("setKeyClose")->setObjectName("close");
+    m_actions.at(SET_KEY_SAVE)->setObjectName("save");
+    m_actions.at(SET_KEY_OPEN)->setObjectName("open");
+    m_actions.at(SET_KEY_QUIT)->setObjectName("quit");
+    m_actions.at(SET_KEY_CLOSE)->setObjectName("close");
 
-    m_actions.at("lightTheme")->setObjectName(":/themes/light_teme.css");
-    m_actions.at("darkTheme")->setObjectName(":/themes/dark_teme.css");
-    m_actions.at("default")->setObjectName("default");
+    m_actions.at(LIGHT_THEME)->setObjectName(":/themes/light_teme.css");
+    m_actions.at(DARK_THEME)->setObjectName(":/themes/dark_teme.css");
+    m_actions.at(DEFAULT_THEME)->setObjectName("default");
 
 // настраиваем окно подсказки
 
@@ -591,22 +626,30 @@ void textEditor::personalization()
     ui->pushButton_open_read_only->setIcon(style()->standardIcon(QStyle::SP_FileIcon));
 
 // настраиваем бар
-    m_actions.at("bar_save")->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
-    m_actions.at("bar_nfile")->setIcon(style()->standardIcon(QStyle::SP_FileIcon));
-    m_actions.at("bar_print")->setIcon(QPixmap(":/images/Print.ico"));
-    m_actions.at("bar_expl")->setIcon(style()->standardIcon(QStyle::SP_DirIcon));
-    m_actions.at("copy_font")->setIcon(style()->standardIcon(QStyle::SP_DialogResetButton));
-    m_actions.at("copy_font")->setCheckable(true);
+    m_actions.at(SAVE_FILE)->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
+    m_actions.at(NEW_FILE)->setIcon(style()->standardIcon(QStyle::SP_FileIcon));
+    m_actions.at(PRINT)->setIcon(QPixmap(":/images/Print.ico"));
+    m_actions.at(EXPLOR)->setIcon(style()->standardIcon(QStyle::SP_DirIcon));
+    m_actions.at(COPY_FONT)->setIcon(style()->standardIcon(QStyle::SP_DialogResetButton));
+    m_actions.at(COPY_FONT)->setCheckable(true);
 
-    m_actions.at("alig_L")->setIcon(QPixmap(":/images/Text-align-left.ico"));
-    m_actions.at("alig_C")->setIcon(QPixmap(":/images/Text-align-center.ico"));
-    m_actions.at("alig_R")->setIcon(QPixmap(":/images/Text-align-right.ico"));
-    m_actions.at("select_AT")->setIcon(QPixmap(":/images/select-AT.ico"));
-    m_actions.at("set_font")->setIcon(QPixmap(":/images/Fonts.ico"));
+    m_actions.at(ALIG_LEFT)->setIcon(QPixmap(":/images/Text-align-left.ico"));
+    m_actions.at(ALIG_CENTER)->setIcon(QPixmap(":/images/Text-align-center.ico"));
+    m_actions.at(ALIG_RIGHT)->setIcon(QPixmap(":/images/Text-align-right.ico"));
+    m_actions.at(SELECT_ALL_TEXT)->setIcon(QPixmap(":/images/select-AT.ico"));
+    m_actions.at(SET_FONT)->setIcon(QPixmap(":/images/Fonts.ico"));
 
-    m_actions.at("alig_L")->setObjectName("alig_L");
-    m_actions.at("alig_C")->setObjectName("alig_C");
-    m_actions.at("alig_R")->setObjectName("alig_R");
+    m_actions.at(ALIG_LEFT)->setObjectName("alig_L");
+    m_actions.at(ALIG_CENTER)->setObjectName("alig_C");
+    m_actions.at(ALIG_RIGHT)->setObjectName("alig_R");
+
+    m_actions.at(DATE)->setIcon(QPixmap(":/images/date.ico"));
+    m_actions.at(TIME)->setIcon(QPixmap(":/images/time.ico"));
+    m_actions.at(DATE_TIME)->setIcon(QPixmap(":/images/date_time.ico"));
+
+    m_actions.at(DATE)->setObjectName("date");
+    m_actions.at(TIME)->setObjectName("time");
+    m_actions.at(DATE_TIME)->setObjectName("date_time");
 
 }
 
@@ -659,7 +702,6 @@ void textEditor::filerReturnPath(const QString& path)
         plaintext->setWindowTitle(path);
     }
 
-    fileView->refresh();
 }
 
 

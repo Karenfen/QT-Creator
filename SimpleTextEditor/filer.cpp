@@ -1,15 +1,19 @@
 #include "filer.h"
 #include <QClipboard>
+#include <QAbstractItemModel>
+#include <QAction>
+
 
 
 filer::filer(QWidget *parent, const QString& filter) :
-    QWidget(parent), ui(new Ui_Form), m_model(new QDirModel)
+    QWidget(parent), ui(new Ui_Form), m_model(new QFileSystemModel), list(nullptr)
 {
     ui->setupUi(this);
 
     ui->comboBoxType->addItem(filter);
     ui->comboBoxType->setItemText(0, filter);
 
+    m_model->setRootPath(QDir::homePath());
     ui->treeView->setModel(m_model.get());
 
     ui->treeView->setColumnWidth(0, 300);
@@ -24,13 +28,8 @@ filer::filer(QWidget *parent, const QString& filter) :
 
 filer::~filer()
 {
-
-}
-
-
-void filer::refresh()
-{
-    m_model->refresh();
+    list->close();
+    delete list;
 }
 
 
@@ -79,3 +78,54 @@ void filer::on_copyPath_clicked()
     clipboard->setText(ui->currentPath->text());
 }
 
+void filer::on_search_clicked()
+{
+    if(ui->fileName->text().isEmpty())
+        return;
+
+    if(list)
+    {
+        delete list;
+    }
+
+    list = new searchResults();
+    list->setWindowModality(Qt::ApplicationModal);
+    list->resize(this->size());
+    list->setWindowTitle(tr("поиск..."));
+    list->setWindowIcon(windowIcon());
+    list->show();
+
+    connect(list, &searchResults::itemDoubleClicked, this, &filer::selectFile);
+    connect(&threadControl, &Controller::sendResult, this, &filer::addResult);
+    connect(list, &searchResults::closed, &threadControl, &Controller::canselThreads);
+
+    threadControl.start(ui->fileName->text());
+
+}
+
+void filer::addResult(const QString& fileName, const QString& filePath)
+{
+    if(list != nullptr)
+    {
+        QListWidgetItem* item = new QListWidgetItem(list);
+        item->setText(fileName);
+        item->setToolTip(filePath);
+        list->addItem(item);
+    }
+}
+
+void filer::selectFile(QListWidgetItem* item)
+{
+    emit fileSelected(item->toolTip());
+    list->close();
+    list->deleteLater();
+    list = nullptr;
+}
+
+
+void searchResults::closeEvent(QCloseEvent *event)
+{
+    emit closed();
+
+    QListWidget::closeEvent(event);
+}

@@ -14,5 +14,9 @@
         <file>images/Text-align-right.ico</file>
         <file>images/select-AT.ico</file>
         <file>images/Fonts.ico</file>
+        <file>images/date.ico</file>
+        <file>images/date_time.ico</file>
+        <file>images/time.ico</file>
+        <file>images/Search.ico</file>
     </qresource>
 </RCC>
